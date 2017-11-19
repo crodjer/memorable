@@ -4,7 +4,9 @@ version = "0.1.0"
 authors = ["Rohan Jain <crodjer@gmail.com>"]
 
 [dependencies]
+clap = "2.27"
 diesel = { version = "0.16.0", features = ["postgres"] }
 diesel_codegen = { version = "0.16.0", features = ["postgres"] }
 dotenv = "0.10"
-clap = "2.27"
+rand = "0.3"
+url = "1.6"
