@@ -8,4 +8,5 @@ extern crate dotenv;
 
 pub mod schema;
 pub mod models;
+pub mod handlers;
 pub mod db;
