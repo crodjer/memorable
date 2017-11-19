@@ -8,8 +8,6 @@ use self::memorable::handlers;
 // This seems to be designed to be glob imported.
 
 fn main() {
-    use memorable::schema::links::dsl::links;
-
     let matches = App::new(env!("CARGO_PKG_NAME"))
         .version(env!("CARGO_PKG_VERSION"))
         .author(env!("CARGO_PKG_AUTHORS"))
@@ -47,24 +45,9 @@ fn main() {
             matches.value_of("custom-key"),
             matches.value_of("title")
         );
-        println!("Link: {:?}", link);
-    }
-
-    if let Some(matches) = matches.subcommand_matches("lookup") {
+        println!("Link: {:?}", link.unwrap());
+    } else if let Some(matches) = matches.subcommand_matches("lookup") {
         let short_link = matches.value_of("short-link").unwrap();
         println!("Looking up: {}", short_link)
     }
-
-
-    // let results = links
-    //     .load::<link::Link>(&connection)
-    //     .expect("Error loading posts");
-
-    // println!("Version: {}", env!("CARGO_PKG_VERSION"));
-    // println!("Displaying {} posts", results.len());
-    // for post in results {
-    //     println!("{}", post.title);
-    //     println!("----------\n");
-    //     println!("{}", post.url);
-    // }
 }
