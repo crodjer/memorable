@@ -1,0 +1,70 @@
+extern crate clap;
+extern crate memorable;
+
+use clap::{Arg, App, SubCommand};
+use self::memorable::db;
+use self::memorable::handlers;
+
+// This seems to be designed to be glob imported.
+
+fn main() {
+    use memorable::schema::links::dsl::links;
+
+    let matches = App::new(env!("CARGO_PKG_NAME"))
+        .version(env!("CARGO_PKG_VERSION"))
+        .author(env!("CARGO_PKG_AUTHORS"))
+        .about(env!("CARGO_PKG_DESCRIPTION"))
+        .subcommand(SubCommand::with_name("shorten")
+                    .about("Shorten a new link")
+                    .arg(Arg::with_name("link")
+                         .required(true)
+                         .help("The link to shorten so that it is memorable."))
+                    .arg(Arg::with_name("title")
+                         .long("title")
+                         .short("t")
+                         .value_name("TITLE")
+                         .help("Title for the link."))
+                    .arg(Arg::with_name("custom-key")
+                         .long("custom-key")
+                         .value_name("CUSTOM KEY")
+                         .short("c")
+                         .help("Use a custom shortend name instead of an \
+                                autogenrated one.")))
+        .subcommand(SubCommand::with_name("lookup")
+                    .about("Look up an already shortened link.")
+                    .arg(Arg::with_name("short-link")
+                         .required(true)
+                         .help("The shortend link to resolve.")))
+        .get_matches();
+
+    // Clap gave us matches, connect to the DB.
+    let connection = db::establish_connection();
+
+    if let Some(matches) = matches.subcommand_matches("shorten") {
+        let link = handlers::links::create_link(
+            &connection,
+            matches.value_of("link").unwrap(),
+            matches.value_of("custom-key"),
+            matches.value_of("title")
+        );
+        println!("Link: {:?}", link);
+    }
+
+    if let Some(matches) = matches.subcommand_matches("lookup") {
+        let short_link = matches.value_of("short-link").unwrap();
+        println!("Looking up: {}", short_link)
+    }
+
+
+    // let results = links
+    //     .load::<link::Link>(&connection)
+    //     .expect("Error loading posts");
+
+    // println!("Version: {}", env!("CARGO_PKG_VERSION"));
+    // println!("Displaying {} posts", results.len());
+    // for post in results {
+    //     println!("{}", post.title);
+    //     println!("----------\n");
+    //     println!("{}", post.url);
+    // }
+}
