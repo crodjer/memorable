@@ -37,4 +37,14 @@ pub mod links {
         }
         insert_link(conn, &mut link, 0)
     }
+
+    pub fn get_link<'a>(conn: &PgConnection, shortened_key: &'a str) -> Result<Link, Box<::std::error::Error>> {
+        use schema::links::dsl::*;
+
+        match links.filter(key.eq(shortened_key))
+            .first::<Link>(conn) {
+                Ok(link) => Ok(link),
+                Err(e) => Err(Box::new(e))
+            }
+    }
 }

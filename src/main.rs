@@ -48,6 +48,7 @@ fn main() {
         println!("Link: {:?}", link.unwrap());
     } else if let Some(matches) = matches.subcommand_matches("lookup") {
         let short_link = matches.value_of("short-link").unwrap();
-        println!("Looking up: {}", short_link)
+        println!("Link: {:?}", handlers::links::get_link(&connection,
+                                                         short_link));
     }
 }
