@@ -35,6 +35,7 @@ fn main() {
                          .required(true)
                          .help("The shortend link to resolve.")));
     let matches = app.clone().get_matches();
+    let mut exit_status = 0;
 
     // Clap gave us matches, connect to the DB.
     let connection = db::establish_connection();
@@ -44,13 +45,31 @@ fn main() {
                                                 matches.value_of("link").unwrap(),
                                                 matches.value_of("custom-key"),
                                                 matches.value_of("title"));
-        println!("Link: {:?}", link.unwrap());
+        match link {
+            Ok(link) => {
+                println!("{:?}", link);
+            },
+            Err(e) => {
+                println!("Error shortning link: {:?}", e);
+                exit_status = 1;
+            }
+        }
     } else if let Some(matches) = matches.subcommand_matches("lookup") {
         let short_link = matches.value_of("short-link").unwrap();
-        println!("Link: {:?}", handlers::links::get_link(&connection,
-                                                         short_link));
+        match handlers::links::get_link(&connection, short_link) {
+            Ok(link) => {
+                println!("Link: {:?}", link);
+            }
+            Err(e) => {
+                println!("Error looking up link: {:?}", e);
+                exit_status = 1;
+            }
+        }
+        ;
     } else {
         app.print_help().unwrap();
-        process::exit(1);
+        exit_status = 1;
     }
+
+    process::exit(exit_status);
 }
