@@ -2,6 +2,7 @@ extern crate rand;
 extern crate url;
 
 pub mod links {
+    use std::fmt;
     use schema::links;
     use super::rand::{thread_rng, Rng};
     use super::url::{Url};
@@ -15,6 +16,17 @@ pub mod links {
         pub domain: String,
         pub title: String,
         pub is_custom: bool,
+    }
+
+    impl fmt::Display for Link {
+        fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+            write!(f, "{}\t{}", self.url, self.key)?;
+            if !self.title.is_empty() {
+                write!(f, "\t{} ", self.title)
+            } else {
+                write!(f, "")
+            }
+        }
     }
 
 

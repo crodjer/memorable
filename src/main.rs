@@ -49,7 +49,7 @@ fn main() {
                                                 matches.value_of("title"));
         match link {
             Ok(link) => {
-                println!("{:?}", link);
+                println!("{}", link);
             },
             Err(e) => {
                 eprintln!("Error shortning link: {:?}", e);
@@ -60,7 +60,7 @@ fn main() {
         let short_link = matches.value_of("short-link").unwrap();
         match handlers::links::get_link(&connection, short_link) {
             Ok(link) => {
-                println!("Link: {:?}", link);
+                println!("{}", link);
             }
             Err(e) => {
                 eprintln!("Error looking up link: {:?}", e);
