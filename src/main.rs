@@ -66,8 +66,7 @@ fn main() {
                 eprintln!("Error looking up link: {:?}", e);
                 exit_status = 1;
             }
-        }
-        ;
+        };
     } else {
         let mut err = io::stderr();
         app.write_help(&mut err).expect("Failed to write help to STDERR");
