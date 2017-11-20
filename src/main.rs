@@ -4,12 +4,14 @@ extern crate memorable;
 use clap::{Arg, App, SubCommand};
 use memorable::db;
 use memorable::handlers;
+use std::io;
+use std::io::Write;
 use std::process;
 
 // This seems to be designed to be glob imported.
 
 fn main() {
-    let mut app = App::new(env!("CARGO_PKG_NAME"))
+    let app = App::new(env!("CARGO_PKG_NAME"))
         .version(env!("CARGO_PKG_VERSION"))
         .author(env!("CARGO_PKG_AUTHORS"))
         .about(env!("CARGO_PKG_DESCRIPTION"))
@@ -50,7 +52,7 @@ fn main() {
                 println!("{:?}", link);
             },
             Err(e) => {
-                println!("Error shortning link: {:?}", e);
+                eprintln!("Error shortning link: {:?}", e);
                 exit_status = 1;
             }
         }
@@ -61,13 +63,15 @@ fn main() {
                 println!("Link: {:?}", link);
             }
             Err(e) => {
-                println!("Error looking up link: {:?}", e);
+                eprintln!("Error looking up link: {:?}", e);
                 exit_status = 1;
             }
         }
         ;
     } else {
-        app.print_help().unwrap();
+        let mut err = io::stderr();
+        app.write_help(&mut err).expect("Failed to write help to STDERR");
+        err.write(b"\n").expect("Failed to write help to STDERR");
         exit_status = 1;
     }
 
