@@ -4,6 +4,7 @@ extern crate memorable;
 use clap::{Arg, App, SubCommand};
 use memorable::db;
 use memorable::handlers;
+use memorable::server;
 use std::io;
 use std::io::Write;
 use std::process;
@@ -16,10 +17,10 @@ fn main() {
         .author(env!("CARGO_PKG_AUTHORS"))
         .about(env!("CARGO_PKG_DESCRIPTION"))
         .subcommand(SubCommand::with_name("shorten")
-                    .about("Shorten a new link")
-                    .arg(Arg::with_name("link")
+                    .about("Shorten a new url")
+                    .arg(Arg::with_name("url")
                          .required(true)
-                         .help("The link to shorten so that it is memorable."))
+                         .help("The url to shorten so that it is memorable."))
                     .arg(Arg::with_name("title")
                          .long("title")
                          .short("t")
@@ -35,18 +36,18 @@ fn main() {
                     .about("Look up an already shortened link.")
                     .arg(Arg::with_name("short-link")
                          .required(true)
-                         .help("The shortend link to resolve.")));
+                         .help("The shortend link to resolve.")))
+        .subcommand(SubCommand::with_name("server")
+                    .about("Start the URL shortner server."));
     let matches = app.clone().get_matches();
     let mut exit_status = 0;
 
-    // Clap gave us matches, connect to the DB.
-    let connection = db::establish_connection();
-
     if let Some(matches) = matches.subcommand_matches("shorten") {
+        let connection = db::establish_connection();
         let link = handlers::links::create_link(&connection,
-                                                matches.value_of("link").unwrap(),
-                                                matches.value_of("custom-key"),
-                                                matches.value_of("title"));
+                                                matches.value_of("url").unwrap().to_owned(),
+                                                matches.value_of("custom-key").map(str::to_owned),
+                                                matches.value_of("title").map(str::to_owned));
         match link {
             Ok(link) => {
                 println!("{}", link);
@@ -57,7 +58,10 @@ fn main() {
             }
         }
     } else if let Some(matches) = matches.subcommand_matches("lookup") {
-        let short_link = matches.value_of("short-link").unwrap();
+        let connection = db::establish_connection();
+        let short_link = matches.value_of("short-link")
+            .unwrap()
+            .to_owned();
         match handlers::links::get_link(&connection, short_link) {
             Ok(link) => {
                 println!("{}", link);
@@ -67,6 +71,8 @@ fn main() {
                 exit_status = 1;
             }
         };
+    } else if let Some(_) = matches.subcommand_matches("server") {
+        server::run();
     } else {
         let mut err = io::stderr();
         app.write_help(&mut err).expect("Failed to write help to STDERR");

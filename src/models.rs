@@ -1,11 +1,8 @@
-extern crate rand;
-extern crate url;
-
 pub mod links {
     use std::fmt;
     use schema::links;
-    use super::rand::{thread_rng, Rng};
-    use super::url::{Url};
+    use rand::{thread_rng, Rng};
+    use url::{Url};
 
     #[derive(Queryable)]
     #[derive(Debug)]
