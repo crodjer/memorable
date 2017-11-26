@@ -45,6 +45,9 @@ fn main() {
     if let Some(matches) = matches.subcommand_matches("shorten") {
         let connection = db::establish_connection();
         let link = handlers::links::create_link(&connection,
+                                                // `clap` makes sure `url` is
+                                                // present, so it is okay to
+                                                // unwrap.
                                                 matches.value_of("url").unwrap().to_owned(),
                                                 matches.value_of("custom-key").map(str::to_owned),
                                                 matches.value_of("title").map(str::to_owned));
