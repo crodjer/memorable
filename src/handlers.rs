@@ -21,7 +21,7 @@ pub mod links {
     }
 
     pub fn create_link(conn: &PgConnection, url: String, key: Option<String>, title: Option<String>) -> Result<Link, Box<::std::error::Error>> {
-        let url = Url::parse(url.as_str())?;
+        let url = Url::parse(&url)?;
         let mut link = CreateLink::new(url);
 
         if let Some(key) = key {
