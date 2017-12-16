@@ -7,6 +7,7 @@ use iron::{Url,status};
 use router::Router;
 use params::{Params, FromValue};
 use middleware::diesel::DieselReqExt;
+use url;
 
 /// Respond with a PONG when called. To be used as a health check.
 fn pong (_: &mut Request) -> IronResult<Response> {
@@ -32,7 +33,12 @@ fn create_link (req: &mut Request) -> IronResult<Response> {
     let title = map.find(&["title"]).and_then(FromValue::from_value);
     let custom_key = map.find(&["custom-key"]).and_then(FromValue::from_value);
     let link = links::create_link(&conn, url.to_owned(), title, custom_key)?;
-    Ok(Response::with((status::Ok, link.key)))
+
+    let mut short_url: url::Url = req.url.clone().into();
+    short_url.set_query(None);
+    short_url.set_path(format!("/{}", link.key).as_str());
+
+    Ok(Response::with((status::Ok, short_url.as_str())))
 }
 
 pub fn run () {
