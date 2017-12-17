@@ -1,3 +1,5 @@
+//! Middleware to be used by the iron framework.
+
 pub mod diesel {
     /// I wanted to play with iron middlewares. So, This module has been
     /// borrowed from:

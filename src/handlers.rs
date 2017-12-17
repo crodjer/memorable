@@ -1,3 +1,8 @@
+//! Handlers abstract the business logic for the application. To be used by the
+//! user interfaces.
+
+/// The handler functions for original and shortened links.
+/// This is the abstraction used by bot the CLI interface and the server.
 pub mod links {
     use diesel;
     use diesel::prelude::*;
@@ -7,6 +12,8 @@ pub mod links {
     use url::{Url};
 
 
+    /// Store a link in a database. Retries key conflicts (generated key already
+    /// exists) 3 times. In case of custom key, no such retry is done.
     pub fn insert_link(conn: &PgConnection, link: &mut CreateLink, try: u8) -> Result<Link, AppError> {
         match diesel::insert(link)
             .into(table)
@@ -26,6 +33,7 @@ pub mod links {
             }
     }
 
+    /// Create a link given a URL. Optionally a key, title can also be provided.
     pub fn create_link(conn: &PgConnection, url: String, key: Option<String>, title: Option<String>) -> Result<Link, AppError> {
         let url = Url::parse(&url)?;
         let mut link = CreateLink::new(url);
@@ -41,6 +49,7 @@ pub mod links {
         insert_link(conn, &mut link, 0)
     }
 
+    /// Get the link object given a shortened key.
     pub fn get_link(conn: &PgConnection, shortened_key: String) -> Result<Link, AppError> {
         use schema::links::dsl::*;
 

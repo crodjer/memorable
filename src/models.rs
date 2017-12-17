@@ -1,9 +1,13 @@
+//! Models to abstract database storage.
+
+/// The models used for link storage.
 pub mod links {
     use std::fmt;
     use schema::links;
     use rand::{thread_rng, Rng};
     use url::{Url};
 
+    /// Link structure that directly maps to the database entries.
     #[derive(Queryable)]
     #[derive(Debug)]
     pub struct Link {
@@ -27,6 +31,7 @@ pub mod links {
     }
 
 
+    /// Structure used to construct a link, to be inserted in the database.
     #[derive(Insertable)]
     #[derive(Debug)]
     #[table_name="links"]
@@ -55,6 +60,7 @@ pub mod links {
     }
 
     impl CreateLink {
+        /// Given a URL, build a new create link object.
         pub fn new(url: Url) -> CreateLink {
             let host = url.host_str().unwrap_or("").to_owned();
 
@@ -67,17 +73,21 @@ pub mod links {
             }
         }
 
+        /// Generate a new key and update the link object.
         pub fn generate_key(&mut self) -> &mut CreateLink {
             self.key = generate_key();
             self
         }
 
+        /// Customise the key for the object, instead of using auto generated
+        /// key.
         pub fn customize(&mut self, key: String) -> &mut CreateLink {
             self.key = key;
             self.is_custom = true;
             self
         }
 
+        /// Set the title for the object when provided.
         pub fn set_title(&mut self, title: String) -> &mut CreateLink {
             self.title = title;
             self

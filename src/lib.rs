@@ -1,8 +1,12 @@
 // This is set so that `infer_schema` done by `src/schema.rs` does not fail.
 #![recursion_limit="128"]
 
+//! Memorable is a URL shortner using the iron web framework and PostgreSQL
+//! (via diesel).
+
 #[macro_use] extern crate diesel;
 #[macro_use] extern crate diesel_codegen;
+
 
 extern crate dotenv;
 extern crate iron;

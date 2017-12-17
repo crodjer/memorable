@@ -3,6 +3,10 @@ name = "memorable"
 version = "0.1.0"
 authors = ["Rohan Jain <crodjer@gmail.com>"]
 
+[[bin]]
+name = "memorable"
+doc = false
+
 [dependencies]
 clap = "2.27"
 diesel = { version = "0.16.0", features = ["postgres"] }
